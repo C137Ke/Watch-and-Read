@@ -111,7 +111,7 @@ function StarRating({ value, onChange, readOnly }) {
   );
 }
 
-function Card({ item, onRate, onNote }) {
+function Card({ item, onRate, onNote, onRemove }) {
   const t = TYPE_META[item.type];
   const isDone = item.status === "completed";
   return (
@@ -120,6 +120,14 @@ function Card({ item, onRate, onNote }) {
         <span className="glyph">{t.glyph}</span>
         <span className="type-label">{t.label}</span>
         <Stamp status={item.status} />
+        <button
+          type="button"
+          className="remove-btn"
+          aria-label={`Remove ${item.title} from list`}
+          onClick={() => onRemove(item.id)}
+        >
+          ×
+        </button>
       </div>
       <div className="perforation" aria-hidden="true">
         {Array.from({ length: 26 }).map((_, i) => (
@@ -185,6 +193,11 @@ export default function App() {
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, rating: n } : i)));
   const note = (id, text) =>
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, notes: text } : i)));
+  const removeItem = (id) => {
+    const target = items.find((i) => i.id === id);
+    if (target && !window.confirm(`Remove "${target.title}" from your list?`)) return;
+    setItems((prev) => prev.filter((i) => i.id !== id));
+  };
 
   const runDiscoverSearch = async (e) => {
     e.preventDefault();
@@ -376,6 +389,17 @@ export default function App() {
           gap: 8px;
           padding: 14px 16px 10px;
         }
+        .remove-btn {
+          background: transparent;
+          border: none;
+          color: rgba(29,35,33,0.35);
+          font-size: 18px;
+          line-height: 1;
+          padding: 2px 4px;
+          cursor: pointer;
+          border-radius: 3px;
+        }
+        .remove-btn:hover { color: var(--rust); background: rgba(166,71,43,0.1); }
         .glyph { font-size: 15px; }
         .type-label {
           font-family: 'IBM Plex Mono', monospace;
@@ -656,7 +680,7 @@ export default function App() {
           ) : (
             <div className="grid">
               {filtered.map((item) => (
-                <Card key={item.id} item={item} onRate={rate} onNote={note} />
+                <Card key={item.id} item={item} onRate={rate} onNote={note} onRemove={removeItem} />
               ))}
             </div>
           )}
