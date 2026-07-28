@@ -1,0 +1,6 @@
+{
+  "name": "Watch & Read",
+  "description": "Personal media catalog to track books, movies, and tutorials.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
